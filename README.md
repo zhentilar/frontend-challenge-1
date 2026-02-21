@@ -17,7 +17,9 @@ That's why the data is **split into minute-based chunks**. Each chunk stores all
 
 This produces **1,440 chunks per day** (24 hours x 60 minutes). As a security administrator, you need to monitor the integrity of these chunks: Which hours had heavy traffic? Are there any gaps? Do you need to download or delete specific chunks?
 
-Your task is to build a dashboard that displays the entire day's chunks as a **calendar-style heatmap** — similar in concept to [GitHub's contribution graph](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/managing-contribution-settings-on-your-profile/viewing-contributions-on-your-profile), but organized by hours and minutes instead of months and days. Darker cells represent high-traffic periods, lighter cells represent low traffic, and empty cells indicate minutes with no data. The administrator can select chunks and perform bulk operations: download or delete.
+Your task is to build a dashboard that displays the entire day's chunks as a **calendar-style heatmap** — similar in concept to [GitHub's contribution graph](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/managing-contribution-settings-on-your-profile/viewing-contributions-on-your-profile), but organized by hours and minutes instead of months and days. Since each chunk maps to a specific minute within a specific hour, the data naturally lends itself to a **time-grid visualization** — think of how a calendar shows days within months, but here you're showing minutes within hours. This time-based structure is key to making the data intuitive at a glance.
+
+Darker cells represent high-traffic periods, lighter cells represent low traffic, and empty cells indicate minutes with no data. The administrator can select chunks and perform bulk operations: download or delete.
 
 **The UI design is entirely up to you.** Use Nuxt UI components creatively to build a clean, functional interface. We want to see your design thinking, not a copy of an existing layout.
 
