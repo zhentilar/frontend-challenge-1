@@ -69,7 +69,7 @@ export const useChunksStore = defineStore('chunks', {
         const group = this.data.groups.find((g: ChunkGroup) => g.date.hour === hour)
         if (!group) return false
         return group.buckets.every((bucket: Bucket) => {
-          const key = this.getBucketKey(bucket.date)
+          const key = `${bucket.date.year}-${bucket.date.month}-${bucket.date.day}-${bucket.date.hour}-${bucket.date.minute}`
           return this.selectedChunks.has(key)
         })
       }
@@ -81,7 +81,7 @@ export const useChunksStore = defineStore('chunks', {
         const group = this.data.groups.find((g: ChunkGroup) => g.date.hour === hour)
         if (!group) return false
         const selectedInGroup = group.buckets.filter((bucket: Bucket) => {
-          const key = this.getBucketKey(bucket.date)
+          const key = `${bucket.date.year}-${bucket.date.month}-${bucket.date.day}-${bucket.date.hour}-${bucket.date.minute}`
           return this.selectedChunks.has(key)
         }).length
         return selectedInGroup > 0 && selectedInGroup < group.buckets.length
@@ -96,7 +96,7 @@ export const useChunksStore = defineStore('chunks', {
       
       for (const group of this.data.groups) {
         for (const bucket of group.buckets) {
-          const key = this.getBucketKey(bucket.date)
+          const key = `${bucket.date.year}-${bucket.date.month}-${bucket.date.day}-${bucket.date.hour}-${bucket.date.minute}`
           if (this.selectedChunks.has(key)) {
             totalSize += bucket.sizeOnDisk
             totalRecords += bucket.dataCount
