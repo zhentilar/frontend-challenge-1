@@ -11,8 +11,29 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-function copyToClipboard(url: string) {
-  navigator.clipboard.writeText(url)
+// Toast notification state
+interface Toast {
+  id: number
+  message: string
+  type: 'success' | 'info'
+}
+
+const toasts = ref<Toast[]>([])
+let toastId = 0
+
+function showToast(message: string, type: 'success' | 'info' = 'success') {
+  const id = ++toastId
+  toasts.value.push({ id, message, type })
+  
+  // Remove toast after 2 seconds
+  setTimeout(() => {
+    toasts.value = toasts.value.filter(t => t.id !== id)
+  }, 2000)
+}
+
+async function copyToClipboard(url: string, fileName: string) {
+  await navigator.clipboard.writeText(url)
+  showToast(`Copied "${fileName}" to clipboard`)
 }
 
 async function handleDownload(url: string, fileName: string) {
@@ -29,10 +50,13 @@ async function handleDownload(url: string, fileName: string) {
     link.click()
     document.body.removeChild(link)
     window.URL.revokeObjectURL(blobUrl)
+    
+    showToast(`Downloaded "${fileName}"`)
   } catch (error) {
     // Fallback: open in new tab if fetch fails
     console.warn('Download failed, opening in new tab instead')
     window.open(url, '_blank')
+    showToast(`Opened "${fileName}" in new tab`)
   }
 }
 </script>
@@ -44,7 +68,7 @@ async function handleDownload(url: string, fileName: string) {
       <div class="absolute inset-0 bg-black/50" @click="emit('close')"></div>
       
       <!-- Modal Content -->
-      <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
+      <div class="relative bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col animate-modal">
         <!-- Header -->
         <div class="flex items-center justify-between p-4 border-b">
           <div class="flex items-center gap-2">
@@ -83,14 +107,14 @@ async function handleDownload(url: string, fileName: string) {
                 <div class="flex gap-2">
                   <button
                     type="button"
-                    class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200"
-                    @click="copyToClipboard(file.downloadUrl)"
+                    class="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded hover:bg-gray-200 transition-all duration-200 hover:scale-105 active:scale-95"
+                    @click="copyToClipboard(file.downloadUrl, file.fileName)"
                   >
                     Copy URL
                   </button>
                   <button
                     type="button"
-                    class="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700"
+                    class="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700 transition-all duration-200 hover:scale-105 active:scale-95"
                     @click="handleDownload(file.downloadUrl, file.fileName)"
                   >
                     Download
@@ -116,6 +140,76 @@ async function handleDownload(url: string, fileName: string) {
           </button>
         </div>
       </div>
+
+      <!-- Toast Notifications -->
+      <div class="fixed bottom-8 right-8 z-50 flex flex-col gap-2">
+        <TransitionGroup name="toast">
+          <div
+            v-for="toast in toasts"
+            :key="toast.id"
+            class="px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 min-w-[200px]"
+            :class="{
+              'bg-emerald-600 text-white': toast.type === 'success',
+              'bg-blue-600 text-white': toast.type === 'info'
+            }"
+          >
+            <svg v-if="toast.type === 'success'" class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            <svg v-else class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="text-sm font-medium">{{ toast.message }}</span>
+          </div>
+        </TransitionGroup>
+      </div>
     </div>
   </Teleport>
 </template>
+
+<style scoped>
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal {
+  animation: modal-enter 0.2s ease-out;
+}
+
+.toast-enter-active {
+  animation: toast-in 0.3s ease-out;
+}
+
+.toast-leave-active {
+  animation: toast-out 0.2s ease-in;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+</style>
