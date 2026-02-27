@@ -2,6 +2,10 @@ import { defineEventHandler, readBody, createError } from 'h3'
 import type { ChunkRequest, DownloadFile, Bucket } from '~/types'
 import signedfilesData from '../../mock-data/signedfiles.json'
 
+// Mock data fallback sizes (used when bucket data is not found)
+const FALLBACK_MIN_SIZE = 89808
+const FALLBACK_MAX_SIZE = 209888
+
 export default defineEventHandler(async (event) => {
   const body = await readBody<ChunkRequest>(event)
   
@@ -32,9 +36,9 @@ export default defineEventHandler(async (event) => {
     downloads.push({
       fileId: `f${downloads.length + 1}`,
       fileName,
-      downloadUrl: `/api/download?file=${encodeURIComponent(fileName)}&size=${bucket?.sizeOnDisk || Math.floor(Math.random() * (209888 - 89808) + 89808)}`,
+      downloadUrl: `/api/download?file=${encodeURIComponent(fileName)}&size=${bucket?.sizeOnDisk || Math.floor(Math.random() * (FALLBACK_MAX_SIZE - FALLBACK_MIN_SIZE) + FALLBACK_MIN_SIZE)}`,
       expirationDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
-      fileSize: bucket?.sizeOnDisk || Math.floor(Math.random() * (209888 - 89808) + 89808)
+      fileSize: bucket?.sizeOnDisk || Math.floor(Math.random() * (FALLBACK_MAX_SIZE - FALLBACK_MIN_SIZE) + FALLBACK_MIN_SIZE)
     })
   }
 

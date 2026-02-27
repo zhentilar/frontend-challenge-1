@@ -4,12 +4,7 @@ import { useChunksStore } from '~/stores/chunks'
 const store = useChunksStore()
 
 // Fetch data on server and hydrate to client
-const { data } = await useAsyncData('chunks', () => store.fetchChunks())
-
-// Ensure data is available
-if (!data.value && import.meta.client) {
-  await store.fetchChunks()
-}
+await useAsyncData('chunks', () => store.fetchChunks())
 </script>
 
 <template>

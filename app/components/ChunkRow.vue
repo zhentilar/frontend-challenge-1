@@ -19,11 +19,6 @@ const hourLabel = computed(() => {
   return `${props.group.date.hour}:00`
 })
 
-function isBucketSelected(bucket: { date: ChunkDate }): boolean {
-  // This will be handled by the parent via prop
-  return false
-}
-
 function handleGroupToggle() {
   emit('toggleGroup', props.group.date.hour)
 }
@@ -62,7 +57,7 @@ function handleBucketClick(date: ChunkDate) {
       <slot 
         :buckets="group.buckets"
         :min-data-count="minDataCount"
-        :max-data-count"
+        :max-data-count="maxDataCount"
         :on-bucket-click="handleBucketClick"
       ></slot>
     </div>

@@ -192,10 +192,9 @@ function handleGroupToggle(hour: number) {
 
 .chunk-grid__cells {
   flex: 1;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(60, 28px);
   gap: 3px;
-  align-content: flex-start;
 }
 
 .chunk-grid__cell {
