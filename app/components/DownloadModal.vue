@@ -20,20 +20,40 @@ interface Toast {
 
 const toasts = ref<Toast[]>([])
 let toastId = 0
+const toastTimeouts = new Map<number, ReturnType<typeof setTimeout>>()
+
+function removeToast(id: number) {
+  toasts.value = toasts.value.filter(t => t.id !== id)
+}
 
 function showToast(message: string, type: 'success' | 'info' = 'success') {
   const id = ++toastId
   toasts.value.push({ id, message, type })
   
-  // Remove toast after 2 seconds
-  setTimeout(() => {
-    toasts.value = toasts.value.filter(t => t.id !== id)
+  // Remove toast after 2 seconds and clean up timeout reference
+  const timeoutId = setTimeout(() => {
+    removeToast(id)
+    toastTimeouts.delete(id)
   }, 2000)
+  toastTimeouts.set(id, timeoutId)
 }
 
+// Clean up all timeouts on unmount
+onUnmounted(() => {
+  for (const timeoutId of toastTimeouts.values()) {
+    clearTimeout(timeoutId)
+  }
+  toastTimeouts.clear()
+})
+
 async function copyToClipboard(url: string, fileName: string) {
-  await navigator.clipboard.writeText(url)
-  showToast(`Copied "${fileName}" to clipboard`)
+  try {
+    await navigator.clipboard.writeText(url)
+    showToast(`Copied "${fileName}" to clipboard`)
+  } catch (err) {
+    console.warn('Failed to copy to clipboard:', err)
+    showToast(`Failed to copy "${fileName}" - please copy manually`, 'info')
+  }
 }
 
 async function handleDownload(url: string, fileName: string) {
@@ -54,9 +74,9 @@ async function handleDownload(url: string, fileName: string) {
     showToast(`Downloaded "${fileName}"`)
   } catch (error) {
     // Fallback: open in new tab if fetch fails
-    console.warn('Download failed, opening in new tab instead')
+    console.warn('Download failed, opening in new tab instead:', error)
     window.open(url, '_blank')
-    showToast(`Opened "${fileName}" in new tab`)
+    showToast(`Download failed - opened "${fileName}" in new tab`, 'info')
   }
 }
 </script>
