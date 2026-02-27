@@ -32,7 +32,6 @@ function handleConfirm() {
   <UModal 
     :open="open" 
     @close="emit('close')"
-    :close="true"
   >
     <template #header>
       <div class="flex items-center gap-2">

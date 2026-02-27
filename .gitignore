@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+.output
+.data
+.nuxt
+.nitro
+dist/
+
+# Logs
+logs
+*.log
+
+# Misc
+.DS_Store
+.fleet
+.idea
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# App specific
+app/node_modules/
+app/.nuxt/
+app/dist/

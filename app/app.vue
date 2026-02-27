@@ -13,7 +13,7 @@ if (!data.value && import.meta.client) {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+  <div class="min-h-screen bg-white">
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
