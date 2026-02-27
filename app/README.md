@@ -171,3 +171,24 @@ The dashboard uses Nuxt's server-side rendering with client-side hydration for o
 | GET | `/api/chunks` | Get all chunk data for the day |
 | POST | `/api/chunks/download-urls` | Get download URLs for selected chunks |
 | DELETE | `/api/chunks` | Delete selected chunks |
+
+## Bug Fixes
+
+The following issues were identified and fixed:
+
+### DownloadModal
+- **Toast Memory Leak**: Added proper cleanup of toast timeouts using `onUnmounted` hook
+- **Clipboard Error Handling**: Added try-catch to prevent unhandled errors when clipboard API fails
+- **Download Failure Feedback**: Users are now informed when download fails and falls back to opening in new tab
+
+### DeleteModal
+- **Error State Display**: Added error message display when delete API operation fails
+
+### ChunkGrid
+- **Empty Cell Selection**: Prevented clicking on empty cells (buckets with 0 data count)
+
+### Store (chunks.ts)
+- **TypeScript Errors**: Fixed TypeScript errors in getters by inlining bucket key generation
+
+### useFormatters
+- **Input Validation**: Added validation for NaN, Infinity, and negative numbers in all formatter functions
