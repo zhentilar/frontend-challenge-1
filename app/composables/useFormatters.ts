@@ -2,6 +2,7 @@
  * Format bytes to human-readable size
  */
 export function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes < 0) return '0 B'
   if (bytes === 0) return '0 B'
   
   const k = 1024
@@ -15,6 +16,8 @@ export function formatBytes(bytes: number): string {
  * Format large numbers with abbreviations (K, M, B)
  */
 export function formatNumber(num: number): string {
+  if (!Number.isFinite(num) || num < 0) return '0'
+  
   if (num >= 1000000000) {
     return (num / 1000000000).toFixed(1) + 'B'
   }
@@ -31,6 +34,7 @@ export function formatNumber(num: number): string {
  * Format number with comma separators
  */
 export function formatWithCommas(num: number): string {
+  if (!Number.isFinite(num) || num < 0) return '0'
   return num.toLocaleString()
 }
 
@@ -38,6 +42,7 @@ export function formatWithCommas(num: number): string {
  * Format compression ratio as percentage
  */
 export function formatCompressionRatio(ratio: number): string {
+  if (!Number.isFinite(ratio) || ratio < 0) return '0%'
   return ratio.toFixed(2) + '%'
 }
 
