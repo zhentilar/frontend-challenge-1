@@ -22,6 +22,13 @@ function isGroupPartial(hour: number): boolean {
 }
 
 function handleBucketClick(date: ChunkDate) {
+  // Don't allow clicking on empty buckets
+  const group = groups.value?.find(g => g.date.hour === date.hour)
+  if (!group) return
+  
+  const bucket = group.buckets.find(b => b.date.minute === date.minute)
+  if (!bucket || bucket.dataCount === 0) return
+  
   store.toggleBucketSelection(date)
 }
 
