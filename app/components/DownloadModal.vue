@@ -15,8 +15,25 @@ function copyToClipboard(url: string) {
   navigator.clipboard.writeText(url)
 }
 
-function handleDownload(url: string) {
-  window.open(url, '_blank')
+async function handleDownload(url: string, fileName: string) {
+  try {
+    const response = await fetch(url)
+    if (!response.ok) throw new Error('Download failed')
+    
+    const blob = await response.blob()
+    const blobUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(blobUrl)
+  } catch (error) {
+    // Fallback: open in new tab if fetch fails
+    console.warn('Download failed, opening in new tab instead')
+    window.open(url, '_blank')
+  }
 }
 </script>
 
@@ -74,7 +91,7 @@ function handleDownload(url: string) {
                   <button
                     type="button"
                     class="px-3 py-1.5 text-xs font-medium text-white bg-emerald-600 rounded hover:bg-emerald-700"
-                    @click="handleDownload(file.downloadUrl)"
+                    @click="handleDownload(file.downloadUrl, file.fileName)"
                   >
                     Download
                   </button>
